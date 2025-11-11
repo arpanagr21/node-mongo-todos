@@ -198,6 +198,8 @@ JWT_SECRET=your-secret-key
 JWT_EXPIRY=7d
 # Redis configuration (optional):
 # If REDIS_URL is set it will be used. Otherwise REDIS_HOST/REDIS_PORT (+ optional REDIS_PASSWORD) are used to build the connection URL.
+
+API request/response payload examples are available in `docs/api_payloads.md`.
 REDIS_URL=redis://localhost:6379  # Optional
 REDIS_HOST=redis
 REDIS_PORT=6379
