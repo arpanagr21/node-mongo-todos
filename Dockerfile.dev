@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /usr/src/app
+
+# Copy package files and install all dependencies (including dev)
+COPY package*.json ./
+RUN npm install
+
+# Copy tsconfig
+COPY tsconfig.json ./
+
+# Copy source code
+COPY src ./src
+
+EXPOSE 3000
+
+# Run in dev mode with hot reload
+CMD ["npm", "run", "dev"]

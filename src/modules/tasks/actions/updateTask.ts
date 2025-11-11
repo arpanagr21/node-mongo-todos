@@ -1,0 +1,42 @@
+import type { Request, Response } from "express";
+import type { IAction } from "../../IModule.js";
+import { Task } from "../../../models/Task.js";
+import type { JwtPayload, TaskUpdateRequest } from "../../../types/index.js";
+import { getRedisClient } from "../../../utils/redis.js";
+
+const redis = getRedisClient();
+
+const updateTaskAction: IAction = {
+  name: "updateTask",
+  handler: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const user = (req as any).user as JwtPayload | undefined;
+      if (!user) {
+        res.status(401).json({ success: false, message: "Unauthorized" });
+        return;
+      }
+
+      const { id } = req.params;
+      const updates = req.body as TaskUpdateRequest;
+
+      const task = await Task.findOne({ _id: id, owner: user.userId });
+      if (!task) {
+        res.status(404).json({ success: false, message: "Task not found" });
+        return;
+      }
+
+      Object.assign(task, updates);
+      const saved = await task.save();
+      const updated = saved.toJSON();
+
+      if (redis) await redis.del(`tasks:${user.userId}`);
+
+      res.json({ success: true, data: updated });
+    } catch (error) {
+      console.error("Update task error:", error);
+      res.status(500).json({ success: false, message: "Failed to update task" });
+    }
+  },
+};
+
+export default updateTaskAction;

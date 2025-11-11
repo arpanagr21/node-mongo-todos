@@ -1,0 +1,66 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor / IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.iml
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log
+.pnp.*
+
+# Build / output
+dist/
+build/
+out/
+coverage/
+lcov-report/
+coverage.json
+*.tgz
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+
+# Environment files
+.env
+.env.*
+.env.*.local
+
+# Docker
+docker-compose.override.yml
+
+# Test artifacts
+jest-cache/
+/.jest
+tests/__snapshots__/
+
+# Misc
+*.local
+*.zip
+*.tar.gz
+*.rar
+*~
+
+# Caches
+.cache/
+.nyc_output/
+
+# mongodb-memory-server downloads/cache (if used locally)
+.mongodb/
+
+# Docs
+docs/
