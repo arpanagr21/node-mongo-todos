@@ -70,9 +70,16 @@ export const createTask = async (req: Request, res: Response) => {
 
     const newTask = newTaskDoc.toJSON();
 
-    // invalidate cache
+    // invalidate cache (delete all keys for this user's task lists)
     const redis = getRedisClient();
-    if (redis) await redis.del(`tasks:${user.userId}`);
+    if (redis) {
+      try {
+        const keys = await redis.keys(`tasks:${user.userId}:*`);
+        if (keys.length) await redis.del(...keys);
+      } catch (err) {
+        console.warn("Redis pattern delete failed:", err);
+      }
+    }
 
     res.status(201).json({ success: true, data: newTask });
   } catch (error) {
@@ -96,8 +103,15 @@ export const updateTask = async (req: Request, res: Response) => {
     const saved = await task.save();
     const updated = saved.toJSON();
 
-    const redis = getRedisClient();
-    if (redis) await redis.del(`tasks:${user.userId}`);
+  const redis = getRedisClient();
+  if (redis) {
+    try {
+      const keys = await redis.keys(`tasks:${user.userId}:*`);
+      if (keys.length) await redis.del(...keys);
+    } catch (err) {
+      console.warn("Redis pattern delete failed:", err);
+    }
+  }
 
     res.json({ success: true, data: updated });
   } catch (error) {
@@ -115,8 +129,15 @@ export const deleteTask = async (req: Request, res: Response) => {
     const task = await Task.findOneAndDelete({ _id: id, owner: user.userId });
     if (!task) return res.status(404).json({ success: false, message: "Task not found" });
 
-    const redis = getRedisClient();
-    if (redis) await redis.del(`tasks:${user.userId}`);
+  const redis = getRedisClient();
+  if (redis) {
+    try {
+      const keys = await redis.keys(`tasks:${user.userId}:*`);
+      if (keys.length) await redis.del(...keys);
+    } catch (err) {
+      console.warn("Redis pattern delete failed:", err);
+    }
+  }
 
     res.json({ success: true, message: "Task deleted" });
   } catch (error) {

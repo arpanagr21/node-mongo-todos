@@ -13,6 +13,7 @@ This project implements **both MVC and Module-based architectures** side-by-side
 Traditional layered architecture organizing code by technical responsibility.
 
 **Structure:**
+
 ```
 src/
 ├── models/           # Data layer (User, Task)
@@ -25,6 +26,7 @@ src/
 **Flow:** `Route → Controller → Model → Response`
 
 **Example:**
+
 ```typescript
 // src/routes/taskRoutes.ts
 router.post("/", verifyToken, createTask);
@@ -37,6 +39,7 @@ export const createTask = async (req, res) => {
 ```
 
 **Pros:**
+
 - Industry standard, widely understood
 - Easy to onboard developers
 - Clear separation by layer
@@ -49,6 +52,7 @@ export const createTask = async (req, res) => {
 Feature-oriented architecture organizing code by domain/feature.
 
 **Structure:**
+
 ```
 src/
 ├── modules/
@@ -70,6 +74,7 @@ src/
 **Flow:** `Route → Module → Action → Model → Response`
 
 **Example:**
+
 ```typescript
 // src/modules/tasks/TasksModule.ts
 class TasksModule implements IModule {
@@ -84,11 +89,14 @@ class TasksModule implements IModule {
 // src/modules/tasks/actions/createTask.ts
 export default {
   name: "createTask",
-  handler: async (req, res) => { /* logic */ }
+  handler: async (req, res) => {
+    /* logic */
+  },
 };
 ```
 
 **Pros:**
+
 - Features grouped together (vertical slicing)
 - High cohesion, low coupling
 - Easy to find related code
@@ -131,8 +139,8 @@ Both architectures are fully implemented. Switch in [src/index.ts](src/index.ts)
 
 ```typescript
 // Currently using MVC:
-app.use("/api/auth", apiAuthRoutes);      // MVC routes
-app.use("/api/tasks", taskRoutes);        // MVC routes
+app.use("/api/auth", apiAuthRoutes); // MVC routes
+app.use("/api/tasks", taskRoutes); // MVC routes
 
 // To switch to Module-based (uncomment this and comment the above route registration logic):
 // moduleRegistry.registerRoutes(app);     // Module-based routes
@@ -158,6 +166,7 @@ docker-compose down
 **Access the API:** `http://localhost:3020`
 
 The Docker setup includes:
+
 - Node.js app with hot reload (port 3020)
 - MongoDB 7 (port 27017)
 - Automatic health checks
@@ -177,12 +186,22 @@ cp .env.example .env
 npm run dev
 ```
 
+## Postman collection
+
+A Postman collection file `postman.json` is included at the project root. Import it into Postman to quickly review and run example requests for the Auth and Tasks endpoints.
+
 **Environment variables:**
+
 ```env
 MONGO_URI=mongodb://localhost:27017/task_db
 JWT_SECRET=your-secret-key
 JWT_EXPIRY=7d
+# Redis configuration (optional):
+# If REDIS_URL is set it will be used. Otherwise REDIS_HOST/REDIS_PORT (+ optional REDIS_PASSWORD) are used to build the connection URL.
 REDIS_URL=redis://localhost:6379  # Optional
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_PASSWORD=
 ```
 
 ---
@@ -194,4 +213,3 @@ REDIS_URL=redis://localhost:6379  # Optional
 - JWT Authentication
 - Redis (caching)
 - bcrypt (password hashing)
-

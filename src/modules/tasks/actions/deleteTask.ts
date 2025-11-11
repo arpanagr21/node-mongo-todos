@@ -23,7 +23,14 @@ const deleteTaskAction: IAction = {
         return;
       }
 
-      if (redis) await redis.del(`tasks:${user.userId}`);
+      if (redis) {
+        try {
+          const keys = await redis.keys(`tasks:${user.userId}:*`);
+          if (keys.length) await redis.del(...keys);
+        } catch (err) {
+          console.warn("Redis pattern delete failed:", err);
+        }
+      }
 
       res.json({ success: true, message: "Task deleted" });
     } catch (error) {

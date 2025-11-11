@@ -14,6 +14,8 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   mongo:
@@ -42,5 +44,24 @@ services:
       retries: 5
       start_period: 20s
 
+  redis:
+    container_name: redis-db
+    image: redis:7
+    restart: always
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    env_file:
+      - .env
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
 volumes:
   mongo-data:
+  redis-data:

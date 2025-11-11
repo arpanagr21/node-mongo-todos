@@ -31,8 +31,15 @@ const createTaskAction: IAction = {
 
       const newTask = newTaskDoc.toJSON();
 
-      // invalidate cache
-      if (redis) await redis.del(`tasks:${user.userId}`);
+      // invalidate cache (delete all keys for this user's task lists)
+      if (redis) {
+        try {
+          const keys = await redis.keys(`tasks:${user.userId}:*`);
+          if (keys.length) await redis.del(...keys);
+        } catch (err) {
+          console.warn("Redis pattern delete failed:", err);
+        }
+      }
 
       res.status(201).json({ success: true, data: newTask });
     } catch (error) {
